@@ -6,11 +6,15 @@ import { randomUUID } from "crypto";
 import { db } from "~/db.server";
 import { getDomainUrl } from "~/utils.server";
 import { useClipboard } from "@mantine/hooks";
+import { useRef } from "react";
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "Share JSON" },
-    { name: "description", content: "Welcome to Remix!" },
+    { title: "JSON Share" },
+    {
+      name: "description",
+      content: "A simple web application for sharing JSON data",
+    },
   ];
 };
 
@@ -38,13 +42,27 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 export default function Index() {
   const fetcher = useFetcher<typeof action>();
   const { copied, copy } = useClipboard();
-
+  const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const isSubmitting = fetcher.state === "submitting";
+
+  function handleJsonFormat(e: React.ChangeEvent<HTMLTextAreaElement>) {
+    if (!textAreaRef.current) return;
+    const rawInput = e.target.value;
+    try {
+      const parsedData = JSON.parse(rawInput);
+      const formattedData = JSON.stringify(parsedData, null, 2);
+      textAreaRef.current.value = formattedData;
+    } catch (error) {
+      console.error("Error parsing JSON:", error);
+      textAreaRef.current.value = rawInput;
+    }
+  }
+
   return (
     <>
       <Navbar />
       <main className="bg-base-200 py-12 min-h-[calc(100vh-64px)] flex justify-center items-center">
-        <section className="max-w-xl w-full space-y-8">
+        <section className="max-w-xl w-full space-y-8 px-4">
           <fetcher.Form method="post" className="flex flex-col gap-6">
             <div className="form-control">
               <label htmlFor="body" className="label">
@@ -54,6 +72,8 @@ export default function Index() {
                 name="body"
                 id="body"
                 className="textarea textarea-bordered h-96"
+                ref={textAreaRef}
+                onBlur={handleJsonFormat}
               ></textarea>
             </div>
             <button
