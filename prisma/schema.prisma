@@ -11,8 +11,9 @@ datasource db {
 }
 
 model JsonBody {
-  id   Int    @id @default(autoincrement())
-  uuid String @unique
-  body String
-  link String
+  id        Int     @id @default(autoincrement())
+  uuid      String  @unique
+  body      String
+  link      String
+  shortLink String? @unique
 }

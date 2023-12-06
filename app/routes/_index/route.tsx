@@ -8,6 +8,9 @@ import Footer from "./Footer";
 import JsonTab from "./JsonTab";
 import ParamsTab from "./ParamsTab";
 import { useState } from "react";
+import ShortUniqueId from "short-unique-id";
+
+const uid = new ShortUniqueId({ length: 16 });
 
 export const meta: MetaFunction = () => {
   return [
@@ -46,21 +49,23 @@ export const meta: MetaFunction = () => {
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
   const body = formData.get("body") as string;
-  if (body.length < 5) return json({ success: false, link: null } as const);
+  const origin = getDomainUrl(request);
+  if (body.length < 5)
+    return json({ success: false, link: null } as const, { status: 400 });
   const newUUID = randomUUID();
+  const fullURL = `https://jsonformatter.org/json-viewer/?url=${origin}/api/resource?uuid=${newUUID}`;
   const jsonBody = await db.jsonBody.create({
     data: {
       body,
       uuid: newUUID,
-      link: `https://jsonformatter.org/json-viewer/?url=${getDomainUrl(
-        request
-      )}/api/resource?uuid=${newUUID}`,
+      link: fullURL,
+      shortLink: uid.rnd(),
     },
   });
 
   return json({
     success: true,
-    link: jsonBody.link,
+    link: `${origin}/api/${jsonBody.shortLink}`,
   } as const);
 };
 
