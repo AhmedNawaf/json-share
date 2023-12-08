@@ -1,3 +1,7 @@
+import ShortUniqueId from "short-unique-id";
+
+const uid = new ShortUniqueId({ length: 16 });
+
 export function getDomainUrl(request: Request) {
   const host =
     request.headers.get("X-Forwarded-Host") ?? request.headers.get("host");
@@ -6,4 +10,8 @@ export function getDomainUrl(request: Request) {
   }
   const protocol = host.includes("localhost") ? "http" : "https";
   return `${protocol}://${host}`;
+}
+
+export function generateRandomId() {
+  return uid.rnd(16);
 }

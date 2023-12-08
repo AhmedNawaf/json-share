@@ -3,14 +3,11 @@ import { json } from "@remix-run/node";
 import Navbar from "./Navbar";
 import { randomUUID } from "crypto";
 import { db } from "~/db.server";
-import { getDomainUrl } from "~/utils.server";
+import { generateRandomId, getDomainUrl } from "~/utils.server";
 import Footer from "./Footer";
 import JsonTab from "./JsonTab";
 import ParamsTab from "./ParamsTab";
 import { useState } from "react";
-import ShortUniqueId from "short-unique-id";
-
-const uid = new ShortUniqueId({ length: 16 });
 
 export const meta: MetaFunction = () => {
   return [
@@ -59,7 +56,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       body,
       uuid: newUUID,
       link: fullURL,
-      shortLink: uid.rnd(),
+      shortLink: generateRandomId(),
     },
   });
 
