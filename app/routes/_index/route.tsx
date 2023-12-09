@@ -1,9 +1,8 @@
 import type { MetaFunction, ActionFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import Navbar from "./Navbar";
-import { randomUUID } from "crypto";
 import { db } from "~/db.server";
-import { generateRandomId, getDomainUrl } from "~/utils.server";
+import { generateRandomId, getDomainUrl, generateUUID } from "~/utils.server";
 import Footer from "./Footer";
 import JsonTab from "./JsonTab";
 import ParamsTab from "./ParamsTab";
@@ -49,7 +48,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const origin = getDomainUrl(request);
   if (body.length < 5)
     return json({ success: false, link: null } as const, { status: 400 });
-  const newUUID = randomUUID();
+  const newUUID = generateUUID();
   const fullURL = `https://jsonformatter.org/json-viewer/?url=${origin}/api/resource?uuid=${newUUID}`;
   const jsonBody = await db.jsonBody.create({
     data: {
