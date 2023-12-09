@@ -1,6 +1,4 @@
-import ShortUniqueId from "short-unique-id";
-
-const uid = new ShortUniqueId({ length: 16 });
+import crypto from "crypto";
 
 export function getDomainUrl(request: Request) {
   const host =
@@ -13,5 +11,20 @@ export function getDomainUrl(request: Request) {
 }
 
 export function generateRandomId() {
-  return uid.rnd(16);
+  const length = 16;
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  const randomBytes = crypto.randomBytes(length);
+
+  let result = "";
+  for (let i = 0; i < length; i++) {
+    const randomIndex = randomBytes[i] % characters.length;
+    result += characters.charAt(randomIndex);
+  }
+
+  return result;
+}
+
+export function generateUUID() {
+  return crypto.randomUUID();
 }
